@@ -2,11 +2,11 @@ const express = require("express");
 const { Browser, BrowserContext, Page, Locator } = require("playwright");
 const { selectors, ui } = require("./selectors");
 const { chromium } = require("playwright-extra");
-const stealth = require('puppeteer-extra-plugin-stealth')()
+const stealth = require("puppeteer-extra-plugin-stealth")();
 
 const app = express();
 const port = 3000;
-chromium.use(stealth)
+chromium.use(stealth);
 
 let context: typeof BrowserContext = null;
 
@@ -118,8 +118,16 @@ app.get("/search-scrape", async (req: any, res: any) => {
     await page.waitForSelector(ui.googleSearch);
     await page
       .locator(ui.googleSearch)
-      .fill(firstName + " " + lastName + " " + companyName);
-    console.log("Searching for " + firstName + " " + lastName + " " + companyName);
+      .fill(firstName + " " + lastName + " " + companyName + ' "Linkedin"');
+    console.log(
+      "Searching for " +
+        firstName +
+        " " +
+        lastName +
+        " " +
+        companyName +
+        ' "Linkedin"'
+    );
     await page.keyboard.press("Enter");
     console.log("Pressed enter");
 
@@ -139,7 +147,6 @@ app.get("/search-scrape", async (req: any, res: any) => {
     }
 
     const scrapedData: any = {};
-
 
     for (const [key, selector] of Object.entries(selectors)) {
       const elements = await page.locator(selector).all();
