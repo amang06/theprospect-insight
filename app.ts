@@ -1,18 +1,19 @@
-import express from 'express';
+const express = require('express');
 const { chromium, Browser, BrowserContext, Page, Locator } = require('playwright');
 const { selectors, ui } = require('./selectors');
 
-const router = express.Router();
+const app = express();
+const port = 3000;
 
-router.get<{}>("/", (req, res) => {
+app.get('/', async (req: any, res: any) => {
   return res.send("running");
-});
+})
 
-router.get("/url-scrape", async (req: any, res: any) => {
+app.get('/url-scrape', async (req: any, res: any) => {
   try {
     const { url } = req; // Get the URL from the query parameters
     if (!url) {
-      return res.status(400).json({ error: "URL parameter is required" });
+      return res.status(400).json({ error: 'URL parameter is required' });
     }
     const browser = await chromium.launch({ headless: true });
     const context = await browser.newContext();
@@ -44,14 +45,14 @@ router.get("/url-scrape", async (req: any, res: any) => {
     for (const [key, selector] of Object.entries(selectors)) {
       const elements = await page.locator(selector).all();
       const data: Array<string | null> = [];
-
+  
       for (const element of elements) {
         const text = await element.textContent();
-        if (text) {
-          data.push(text.replace(/\n/g, "").trim());
+        if(text){
+          data.push(text.replace(/\n/g,"").trim());
         }
       }
-
+  
       scrapedData[key] = data;
     }
 
@@ -59,27 +60,26 @@ router.get("/url-scrape", async (req: any, res: any) => {
 
     res.json(scrapedData);
   } catch (error) {
-    console.error("Error during scraping: " + error);
-    res.status(500).json({ error: "Internal Server Error" });
+    console.error('Error during scraping: '+ error);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 });
 
-router.get("/search-scrape", async (req: any, res: any) => {
+app.get('/search-scrape', async (req: any, res: any) => {
   try {
     const { firstName, lastName, companyName } = req.query; // Get the URL from the query parameters
-
+   
     if (!lastName) {
-      return res.status(400).json({ error: "lastName parameter is required" });
+      return res.status(400).json({ error: 'lastName parameter is required'});
     }
-    if (!firstName) {
-      return res.status(400).json({ error: "firstName parameter is required" });
+    if(!firstName)
+    {
+      return res.status(400).json({ error: 'firstName parameter is required'});
     }
     if (!companyName) {
-      return res
-        .status(400)
-        .json({ error: "companyName parameter is required" });
+      return res.status(400).json({ error: 'companyName parameter is required' });
     }
-
+      
     const browser = await chromium.launch({ headless: true });
     const context = await browser.newContext();
     const page = await context.newPage();
@@ -88,9 +88,7 @@ router.get("/search-scrape", async (req: any, res: any) => {
 
     await page.goto(google);
     await page.waitForSelector(ui.googleSearch);
-    await page
-      .locator(ui.googleSearch)
-      .fill(firstName + " " + lastName + " " + companyName);
+    await page.locator(ui.googleSearch).fill(firstName+" "+lastName+" "+companyName);
     await page.keyboard.press("Enter");
 
     for (let i = 0; i < 10; i++) {
@@ -112,14 +110,14 @@ router.get("/search-scrape", async (req: any, res: any) => {
     for (const [key, selector] of Object.entries(selectors)) {
       const elements = await page.locator(selector).all();
       const data: Array<string | null> = [];
-
+  
       for (const element of elements) {
         const text = await element.textContent();
-        if (text) {
-          data.push(text.replace(/\n/g, "").trim());
+        if(text){
+          data.push(text.replace(/\n/g,"").trim());
         }
       }
-
+  
       scrapedData[key] = data;
     }
 
@@ -127,9 +125,11 @@ router.get("/search-scrape", async (req: any, res: any) => {
 
     res.json(scrapedData);
   } catch (error) {
-    console.error("Error during scraping:", error);
-    res.status(500).json({ error: "Internal Server Error" });
+    console.error('Error during scraping:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 });
 
-export default router;
+app.listen(port, () => {
+  console.log(`Server is running on port ${port}`);
+});
