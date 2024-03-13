@@ -8,3 +8,5 @@ build:
       - npx playwright install-deps                        
 run:                              
   command: npm run dev
+  network:
+    port: 8000
