@@ -9,8 +9,7 @@
   "scripts": {
     "postinstall": "npx playwright install chromium && npx playwright install-deps",
     "start": "run dev",
-    "dev": "ts-node app.ts",
-    "vercel-build": "echo hellp"
+    "dev": "ts-node app.ts"
   },
   "keywords": [],
   "author": "",

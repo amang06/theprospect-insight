@@ -5,6 +5,28 @@ const { selectors, ui } = require('./selectors');
 const app = express();
 const port = 3000;
 
+let context: typeof BrowserContext = null; 
+
+// Function to initialize browser
+async function initializeBrowser() {
+  const browser = await chromium.launch({ headless: false });
+  context = await browser.newContext();
+}
+
+// Middleware to ensure browser is initialized before processing requests
+app.use(async (req: any, res:any, next: any) => {
+  if (!context) {
+    try {
+      await initializeBrowser();
+    } catch (error) {
+      console.error('Error initializing browser:', error);
+      return res.status(500).json({ error: 'Internal Server Error' });
+    }
+  }
+  next();
+});
+
+
 app.get('/', async (req: any, res: any) => {
   return res.send("running");
 })
@@ -15,8 +37,8 @@ app.get('/url-scrape', async (req: any, res: any) => {
     if (!url) {
       return res.status(400).json({ error: 'URL parameter is required' });
     }
-    const browser = await chromium.launch({ headless: true });
-    const context = await browser.newContext();
+    // const browser = await chromium.launch({ headless: true });
+    // const context = await browser.newContext();
     const page = await context.newPage();
 
     const google = "https://www.google.com";
@@ -56,7 +78,7 @@ app.get('/url-scrape', async (req: any, res: any) => {
       scrapedData[key] = data;
     }
 
-    await browser.close();
+    await page.close();
 
     res.json(scrapedData);
   } catch (error) {
@@ -80,8 +102,8 @@ app.get('/search-scrape', async (req: any, res: any) => {
       return res.status(400).json({ error: 'companyName parameter is required' });
     }
       
-    const browser = await chromium.launch({ headless: true });
-    const context = await browser.newContext();
+    // const browser = await chromium.launch({ headless: true });
+    // const context = await browser.newContext();
     const page = await context.newPage();
 
     const google = "https://www.google.com";
@@ -121,7 +143,7 @@ app.get('/search-scrape', async (req: any, res: any) => {
       scrapedData[key] = data;
     }
 
-    await browser.close();
+    await page.close();
 
     res.json(scrapedData);
   } catch (error) {
