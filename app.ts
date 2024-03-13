@@ -18,6 +18,7 @@ app.use(async (req: any, res:any, next: any) => {
   if (!context) {
     try {
       await initializeBrowser();
+      console.log("Browser initialized successfully")
     } catch (error) {
       console.error('Error initializing browser:', error);
       return res.status(500).json({ error: 'Internal Server Error' });
@@ -33,7 +34,7 @@ app.get('/', async (req: any, res: any) => {
 
 app.get('/url-scrape', async (req: any, res: any) => {
   try {
-    const { url } = req; // Get the URL from the query parameters
+    const { url } = req.query; // Get the URL from the query parameters
     if (!url) {
       return res.status(400).json({ error: 'URL parameter is required' });
     }
@@ -44,18 +45,24 @@ app.get('/url-scrape', async (req: any, res: any) => {
     const google = "https://www.google.com";
 
     await page.goto(google);
+    console.log("Redirecting to Google")
     await page.waitForSelector(ui.googleSearch);
     await page.locator(ui.googleSearch).fill(url);
+    console.log("Searching for "+url)
     await page.keyboard.press("Enter");
+    console.log("Pressed enter")
 
     for (let i = 0; i < 10; i++) {
       await page.waitForSelector(ui.googleSearchResultsPage);
       await page.locator(ui.searchResults).click();
+      console.log("Clicked search results")
       await page.waitForTimeout(1000);
       const lpage = await page.locator(selectors.summary).isVisible();
       if (lpage) {
+        console.log("Linkedin page loaded")
         break;
       } else {
+        console.log("Linkedin page not loaded, going back")
         await page.goBack();
       }
     }
