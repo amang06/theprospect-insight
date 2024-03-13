@@ -9,7 +9,7 @@ let context: typeof BrowserContext = null;
 
 // Function to initialize browser
 async function initializeBrowser() {
-  const browser = await chromium.launch({ headless: false });
+  const browser = await chromium.launch({ headless: true });
   context = await browser.newContext();
 }
 
