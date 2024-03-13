@@ -5,7 +5,6 @@ build:
     build:
       - npm install 
       - npx playwright install chromium
-      - apt install apt
       - npx playwright install-deps                        
 run:                              
   command: npm run dev
