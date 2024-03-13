@@ -9,7 +9,7 @@
   "scripts": {
     "postinstall": "npx playwright install chromium",
     "start": "run dev",
-    "dev": "ts-node index.ts"
+    "dev": "ts-node app.ts"
   },
   "keywords": [],
   "author": "",

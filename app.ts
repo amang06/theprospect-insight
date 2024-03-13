@@ -5,6 +5,10 @@ const { selectors, ui } = require('./selectors');
 const app = express();
 const port = 3000;
 
+app.get('/', async (req: any, res: any) => {
+  return res.send("running");
+})
+
 app.get('/url-scrape', async (req: any, res: any) => {
   try {
     const { url } = req; // Get the URL from the query parameters
