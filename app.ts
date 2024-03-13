@@ -62,7 +62,7 @@ app.get('/url-scrape', async (req: any, res: any) => {
 
     const scrapedData: any = {};
 
-    await page.waitForSelector(selectors.summary);
+    // await page.waitForSelector(selectors.summary);
 
     for (const [key, selector] of Object.entries(selectors)) {
       const elements = await page.locator(selector).all();
@@ -127,7 +127,7 @@ app.get('/search-scrape', async (req: any, res: any) => {
 
     const scrapedData: any = {};
 
-    await page.waitForSelector(selectors.summary);
+    // await page.waitForSelector(selectors.summary);
 
     for (const [key, selector] of Object.entries(selectors)) {
       const elements = await page.locator(selector).all();
